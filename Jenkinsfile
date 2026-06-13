@@ -79,7 +79,7 @@ DFEOF
         stage('Deploy to Minikube') {
             steps {
                 sh '''
-                    export KUBECONFIG=/home/ubuntu/.kube/config
+                    export KUBECONFIG=/var/lib/jenkins/.kube/config
                     kubectl apply -f k8s/pvc.yaml
                     kubectl apply -f k8s/blue-deployment.yaml
                     kubectl apply -f k8s/green-deployment.yaml
