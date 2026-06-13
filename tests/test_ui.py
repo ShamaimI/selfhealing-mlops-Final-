@@ -11,11 +11,12 @@ def test_frontend_sentiment():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
+    options.binary_location = "/usr/bin/chromium"
 
     driver = webdriver.Chrome(options=options)
 
     try:
-        driver.get("http://localhost:32500")
+        driver.get("http://localhost:5000")
         wait = WebDriverWait(driver, 10)
 
         text_input = wait.until(EC.presence_of_element_located((By.ID, "text-input")))
@@ -24,7 +25,7 @@ def test_frontend_sentiment():
         submit_btn = driver.find_element(By.ID, "submit-btn")
         submit_btn.click()
 
-        time.sleep(3)
+        time.sleep(5)
 
         result_output = driver.find_element(By.ID, "result-output")
         result_text = result_output.text
