@@ -1,0 +1,11 @@
+groups:
+  - name: ml_alerts
+    rules:
+      - alert: ModelConfidenceDrift
+        expr: prediction_confidence_score < 0.65
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Model confidence dropped below threshold"
+          description: "Prediction confidence is below 0.65 for more than 1 minute"
