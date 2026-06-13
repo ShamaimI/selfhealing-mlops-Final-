@@ -5,6 +5,9 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
         IMAGE_UNSTABLE = 'shamaimm/sentiment-api:unstable'
         IMAGE_STABLE = 'shamaimm/sentiment-api:stable'
+
+        HOME = '/var/lib/jenkins'
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'
     }
 
     stages {
@@ -18,9 +21,15 @@ pipeline {
             steps {
                 sh '''
                     docker build -t shamaimm/sentiment-api:unstable .
+
                     docker stop sentiment-test || true
                     docker rm sentiment-test || true
-                    docker run -d --name sentiment-test -p 5000:5000 shamaimm/sentiment-api:unstable
+
+                    docker run -d \
+                        --name sentiment-test \
+                        -p 5000:5000 \
+                        shamaimm/sentiment-api:unstable
+
                     sleep 15
                 '''
             }
@@ -53,6 +62,7 @@ pipeline {
             steps {
                 sh '''
                     echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin
+
                     docker push shamaimm/sentiment-api:unstable
 
                     git fetch origin stable-fallback
@@ -71,6 +81,7 @@ DFEOF
 
                     docker build -t shamaimm/sentiment-api:stable -f Dockerfile.stable .
                     docker push shamaimm/sentiment-api:stable
+
                     git checkout main
                 '''
             }
@@ -79,11 +90,22 @@ DFEOF
         stage('Deploy to Minikube') {
             steps {
                 sh '''
-                    export KUBECONFIG=/var/lib/jenkins/.kube/config
+                    echo "=== Kubernetes Connection Test ==="
+                    whoami
+                    echo $HOME
+                    echo $KUBECONFIG
+
+                    kubectl get nodes
+
+                    echo "=== Applying Kubernetes Resources ==="
                     kubectl apply -f k8s/pvc.yaml
                     kubectl apply -f k8s/blue-deployment.yaml
                     kubectl apply -f k8s/green-deployment.yaml
                     kubectl apply -f k8s/service.yaml
+
+                    echo "=== Deployment Status ==="
+                    kubectl get pods -A
+                    kubectl get svc -A
                 '''
             }
         }
@@ -96,9 +118,11 @@ DFEOF
                 docker rm sentiment-test || true
             '''
         }
+
         success {
             echo 'Pipeline completed successfully!'
         }
+
         failure {
             echo 'Pipeline failed!'
         }
