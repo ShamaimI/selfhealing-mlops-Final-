@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-creds')
         IMAGE_UNSTABLE = 'shamaimm/sentiment-api:unstable'
         IMAGE_STABLE = 'shamaimm/sentiment-api:stable'
 
