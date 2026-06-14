@@ -1,21 +1,24 @@
 pipeline {
     agent any
 
+    environment {
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'
+    }
+
     stages {
         stage('Switch Traffic to Stable (Green)') {
             steps {
-                sh '''
-                    export KUBECONFIG=/home/ubuntu/.kube/config
+                sh """
                     kubectl patch service sentiment-api-service \
-                        -p '{"spec":{"selector":{"app":"sentiment","slot":"green"}}}'
-                '''
+                        -p '{"spec":{"selector":{"slot":"green"}}}'
+                """
             }
         }
     }
 
     post {
         success {
-            echo 'Traffic switched to stable green deployment!'
+            echo 'Rollback to stable complete!'
         }
         failure {
             echo 'Rollback failed!'
