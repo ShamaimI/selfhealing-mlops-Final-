@@ -1,1 +1,1 @@
-http://localhost:3000/public-dashboards/420bd0d931084a089b0fb9818500bf65
+http://15.134.86.235:3000/public-dashboards/420bd0d931084a089b0fb9818500bf65
