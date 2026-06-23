@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: sentiment-api
-          image: shamaimm/sentiment-api:unstable
+          image: worksh/sentiment-api:unstable
           ports:
             - containerPort: 5000
           volumeMounts:
