@@ -14,6 +14,6 @@ receivers:
       - url: 'http://51.20.8.221:8080/generic-webhook-trigger/invoke?token=ROLLBACK_52E8B9_TOKEN'
         http_config:
           basic_auth:
-            username: 'lab'
-            password: '118f743171a7c89ad91bcf56072bfc5257'
+            username: "work"
+            password: '110b2ca35751d682cb5cd178abc11b23c6'
         send_resolved: false
