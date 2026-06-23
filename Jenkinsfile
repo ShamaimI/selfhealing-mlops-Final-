@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-creds')
-        IMAGE_UNSTABLE = 'shamaimm/sentiment-api:unstable'
-        IMAGE_STABLE = 'shamaimm/sentiment-api:stable'
+        IMAGE_UNSTABLE = 'worksh/sentiment-api:unstable'
+        IMAGE_STABLE = 'worksh/sentiment-api:stable'
 
         HOME = '/var/lib/jenkins'
         KUBECONFIG = '/var/lib/jenkins/.kube/config'
@@ -20,7 +20,7 @@ pipeline {
         stage('Build and Run') {
             steps {
                 sh '''
-                    docker build -t shamaimm/sentiment-api:unstable .
+                    docker build -t worksh/sentiment-api:unstable .
 
                     docker stop sentiment-test || true
                     docker rm sentiment-test || true
@@ -28,7 +28,7 @@ pipeline {
                     docker run -d \
                         --name sentiment-test \
                         -p 5000:5000 \
-                        shamaimm/sentiment-api:unstable
+                        worksh/sentiment-api:unstable
 
                     sleep 15
                 '''
@@ -40,7 +40,7 @@ pipeline {
                 sh '''
                     docker run --rm \
                         --network host \
-                        shamaimm/sentiment-api:unstable \
+                        worksh/sentiment-api:unstable \
                         python -m pytest tests/test_api.py -v
                 '''
             }
@@ -52,7 +52,7 @@ pipeline {
                     docker run --rm \
                         --network host \
                         -e DISPLAY=:99 \
-                        shamaimm/sentiment-api:unstable \
+                        worksh/sentiment-api:unstable \
                         python -m pytest tests/test_ui.py -v
                 '''
             }
@@ -63,7 +63,7 @@ pipeline {
                 sh '''
                     echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin
 
-                    docker push shamaimm/sentiment-api:unstable
+                    docker push worksh/sentiment-api:unstable
 
                     git fetch origin stable-fallback
                     git checkout stable-fallback
@@ -79,8 +79,8 @@ EXPOSE 5000
 CMD ["python", "app.py"]
 DFEOF
 
-                    docker build -t shamaimm/sentiment-api:stable -f Dockerfile.stable .
-                    docker push shamaimm/sentiment-api:stable
+                    docker build -t worksh/sentiment-api:stable -f Dockerfile.stable .
+                    docker push worksh/sentiment-api:stable
 
                     git checkout main
                 '''
